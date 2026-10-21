@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chaser — Board</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">Chaser</div>
+    <div class="user">
+      {{ user_email }}
+      <a href="/logout">Logout</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary">
+      <div class="stat">
+        <span class="label">Total Overdue</span>
+        <span class="value">{{ total_overdue }}</span>
+      </div>
+    </section>
+
+    <section class="add-invoice">
+      <h2>Add Invoice</h2>
+      <form method="POST" action="/invoices">
+        <input type="text" name="customer" placeholder="Customer" required>
+        <input type="number" name="amount" step="0.01" placeholder="Amount" required>
+        <input type="text" name="currency" value="USD" placeholder="Currency">
+        <input type="date" name="due_date" required>
+        <input type="text" name="notes" placeholder="Notes (optional)">
+        <button type="submit">Add</button>
+      </form>
+    </section>
+
+    <section class="board">
+      <h2>Open Invoices</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Due</th>
+            <th>Days Late</th>
+            <th>Status</th>
+            <th>Last Chase</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in invoices %}
+          <tr class="{% if inv.days_late > 0 %}overdue{% endif %}">
+            <td>{{ inv.customer }}</td>
+            <td>{{ inv.amount }}</td>
+            <td>{{ inv.due_date }}</td>
+            <td>
+              {% if inv.days_late > 0 %}
+                <span class="badge late">{{ inv.days_late }}d</span>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td>{{ inv.status }}</td>
+            <td>{{ inv.last_chase }}</td>
+            <td class="actions">
+              {% if inv.status == "open" %}
+              <form method="POST" action="/invoices/{{ inv.id }}/chase" style="display:inline">
+                <input type="hidden" name="chase_type" value="friendly">
+                <button type="submit">Chase</button>
+              </form>
+              <form method="POST" action="/invoices/{{ inv.id }}/paid" style="display:inline">
+                <button type="submit">Paid</button>
+              </form>
+              <form method="POST" action="/invoices/{{ inv.id }}/snooze" style="display:inline">
+                <button type="submit">Snooze</button>
+              </form>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

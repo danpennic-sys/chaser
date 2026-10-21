@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chaser — Login</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-page">
+  <div class="card">
+    <h1>Chaser</h1>
+    <p class="tagline">Get paid faster. Stop chasing invoices manually.</p>
+
+    {% if let Some(err) = error %}
+      <div class="error">{{ err }}</div>
+    {% endif %}
+
+    {% if let Some(msg) = message %}
+      <div class="message">{{ msg }}</div>
+    {% endif %}
+
+    <form method="POST" action="/auth/magic-link">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required placeholder="you@company.com" autofocus>
+      <button type="submit">Send magic link</button>
+    </form>
+
+    <p class="hint">No password. We email you a one-time link.</p>
+  </div>
+</body>
+</html>
