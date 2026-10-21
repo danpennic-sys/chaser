@@ -1,37 +1,57 @@
 # Chaser
 
-Invoice chasing dashboard with live external API integrations.
+Invoice chasing dashboard.  
+**Stack:** Rust · Axum · HTMX · SQLite · Magic Link auth
 
-## One-command start
+Get paid faster. Stop chasing invoices manually.
 
-```bash
-./start.sh
-```
-
-or
+## Quick start
 
 ```bash
-python3 -m http.server 8765
+cp .env.example .env
+cargo run
 ```
 
-Open **http://localhost:8765**
+Open http://localhost:3000
 
-## External APIs integrated
+### Magic link (dev mode)
+Enter any email → the magic link is printed in the terminal **and** shown on the page.  
+Click it to log in. No real email is sent yet.
 
-| Feature              | Endpoint                     | Purpose                          |
-|----------------------|------------------------------|----------------------------------|
-| Live FX rates        | open.er-api.com/v6/latest/USD| Real-time USD→EUR conversion     |
-| Send Chase           | httpbin.org/post             | Real external POST of chase data |
-| Accounting Sync      | httpbin.org/get + local merge| Demonstrates external pull + merge|
-| Connectivity test    | httpbin.org                  | One-click health check           |
+## Features (v1)
 
-All calls are live. No API keys required for the demo endpoints.
+- Magic-link authentication
+- Persistent invoices in SQLite
+- Board with overdue totals + days-late
+- Add invoice
+- One-click Chase / Mark Paid / Snooze
+- Ready for PlanClose CSV import (next)
 
-## Core features
+## Environment
 
-- Board view with overdue totals + days-late badges
-- Harbor & Co sample matching the original preview
-- Add / Send Chase / Snooze / Mark paid
-- Persistent localStorage
-- Integration status bar
-- Full Auth Lab (OAuth 2.0+PKCE, JWT, HMAC, mTLS)
+| Variable       | Default                  | Description                |
+|----------------|--------------------------|----------------------------|
+| `DATABASE_URL` | `sqlite:chaser.db`       | SQLite connection string   |
+| `BASE_URL`     | `http://localhost:3000`  | Used for magic-link URLs   |
+| `PORT`         | `3000`                   | Listen port                |
+
+## Project layout
+
+```
+src/
+  main.rs
+  auth.rs
+  db.rs
+  models.rs
+  handlers/
+migrations/
+templates/
+static/
+```
+
+## Next
+
+- Real email sending for magic links (Resend / Postmark)
+- PlanClose CSV import endpoint
+- Deploy (Fly.io / Railway)
+- Sequences + better chase templates
